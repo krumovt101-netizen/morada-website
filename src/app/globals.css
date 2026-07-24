@@ -1,26 +1,206 @@
 @import "tailwindcss";
 
+/* ============================================================================
+   MORADA — "Manhã de Lisboa" visual system
+   ---------------------------------------------------------------------------
+   The direction in one line: a neighbourhood estate agency that shows a home
+   the way morning light does — plainly. The homepage is one continuous film
+   through a single Lisbon apartment; the UI around it is limestone paper,
+   ink, and one azulejo-blue accent. Everything calm, nothing "luxury".
+
+   The palette is the light inversion of a dark cinematic site: the page IS
+   the curtain colour the film dissolves through (see ScrollSequence.tsx —
+   the curtain div uses bg-paper, and that identity is what makes film→content
+   joins read as one continuous document).
+
+   Every text/background pair below was verified by CALCULATION (WCAG 2.1
+   relative luminance, scratchpad script), not by eye. Ratios annotated per
+   line. Two rules that break easily:
+   - the solid azulejo button DARKENS on hover (azulejo-deep): its text is
+     paper, so darkening raises contrast (6.21:1 → 8.17:1). This is the
+     inverse of a dark site's "lighten on hover" rule.
+   - terracotta is LARGE TEXT ONLY (4.38:1). The rooftops in the footage own
+     that colour; in the UI it never carries body text.
+
+   z-index scale (do not invent others): 30 header · 70 global grain.
+   ========================================================================== */
+
+@theme {
+  /* --- surfaces --- */
+  --color-paper: #f5f1e9; /* limestone plaster. the page, and the film curtain. */
+  --color-paper-2: #ece5d8; /* raised: cards, bands. */
+
+  /* --- lines on paper --- */
+  --color-rule: #d9d1c0; /* 1.35:1 — DECORATIVE only. separates, never draws. */
+  /* Interactive-control floor (WCAG 1.4.11 wants 3:1): 3.41:1 on paper,
+     3.07:1 on paper-2. Buttons and fields use this one, not the one above. */
+  --color-rule-strong: #8a8172;
+
+  /* --- ink (ratios on paper #f5f1e9) --- */
+  --color-ink: #201b15; /* 15.17:1  primary (13.64 on paper-2) */
+  --color-ink-dim: #5d564a; /*  6.44:1  secondary (5.79 on paper-2) */
+
+  /* --- azulejo: THE accent. links, CTAs, active states. never decoration. --- */
+  --color-azulejo: #2e5c88; /* 6.21:1 on paper (5.58 on paper-2) — passes as
+                               small text, rare for a mid blue. paper text on
+                               an azulejo fill: 6.21:1. */
+  --color-azulejo-deep: #224a70; /* solid-button HOVER (paper on it: 8.17:1);
+                                    also small accents on paper-2 (7.35:1). */
+
+  /* --- terracotta: the roofs' colour. semantic warmth, strictly rationed. --- */
+  --color-terracotta: #b3552e; /* 4.38:1 on paper: LARGE text or graphics only. */
+  --color-terracotta-deep: #8f4021; /* 6.38:1 — the small-text fallback if ever needed. */
+
+  /* --- typography: three voices --- */
+  --font-display: var(--font-newsreader), "Newsreader", Georgia, serif;
+  --font-body: var(--font-figtree), "Figtree", system-ui, sans-serif;
+  --font-data: var(--font-spline-mono), "Spline Sans Mono", ui-monospace, monospace;
+
+  /* --- motion: one voice --- */
+  --ease-reg: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-drama: cubic-bezier(0.76, 0, 0.18, 1);
+}
+
+/* ============================================================================
+   Base
+   ========================================================================== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+
+::selection {
+  background-color: var(--color-azulejo);
+  color: var(--color-paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-azulejo);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+/* ============================================================================
+   Typography: the three voices
+
+   NEWSREADER is the voice of the house — a warm editorial serif with an
+   optical axis; thin and monumental at display sizes, never shouty.
+   FIGTREE is the interface: rounded-humanist, plain, approachable.
+   SPLINE SANS MONO is the data voice: a price is a number, not marketing.
+   ========================================================================== */
+
+.t-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-optical-sizing: auto;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.t-headline {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-optical-sizing: auto;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* Editorial paragraph: the caption under a photograph, not UI body. */
+.t-lede {
+  font-family: var(--font-display);
+  font-weight: 420;
+  font-optical-sizing: auto;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.t-body {
+  font-family: var(--font-body);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+/* The data voice: mono, uppercase, tracked. Chapter markers, labels, prices. */
+.t-data {
+  font-family: var(--font-data);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.6875rem;
+  line-height: 1.3;
+}
+
+.t-numeral {
+  font-family: var(--font-data);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+table,
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================================
+   Texture: film grain over paper
+   One fixed layer over the whole document (pointer-events none). On a light
+   ground it MULTIPLIES at low opacity — it also masks webp banding in bright
+   skies and plaster walls, which is real work, not decoration.
+   ========================================================================== */
+
+.grain-site {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 70;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ============================================================================
+   Composition utilities
+   ========================================================================== */
+
+.rule {
+  border-top: 1px solid var(--color-rule);
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
