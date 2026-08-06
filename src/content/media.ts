@@ -71,10 +71,12 @@ export const SEQUENCES: SequenceShot[] = [
   {
     slot: "descida",
     base: "/media/sequences/descida",
+    /* Extracted at 10 fps (not the usual 12) to keep the daylight aerial under
+       the 5 MB budget at 1600 px; the scrub lerp hides the difference. */
     frameCount: 50,
     scrollLength: 3,
     stock: true,
-    credit: "higgsfield:eee82bb9-8228-4c3b-9108-37374d6373b7",
+    credit: "higgsfield:f5169a3c-9d20-494d-b880-5953f13be0a1",
     alt: {
       pt: "Descida lenta de drone sobre os telhados de Lisboa, do alto até à porta de um prédio de meio do século",
       en: "A slow drone descent over Lisbon rooftops, from high above down to the door of a mid-century building",
@@ -134,7 +136,7 @@ export const SEQUENCES: SequenceShot[] = [
     frameCount: 61,
     scrollLength: 2.5,
     stock: true,
-    credit: "higgsfield:63193f8e-ad96-4ad0-a8f0-e47804e06fc6",
+    credit: "higgsfield:8d898b64-9575-4359-99d3-8aeefb8890f8",
     alt: {
       pt: "Aproximação constante às portas de varanda abertas, com a cidade luminosa lá fora",
       en: "A steady push toward the open balcony doors, the bright city beyond",
